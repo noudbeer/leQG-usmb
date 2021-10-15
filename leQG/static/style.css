@@ -1,12 +1,16 @@
 html { 
     font-family: sans-serif;
-    background: #eee;
+    /* background: #eee; */
+    background: white;
     padding: 1rem;
 }
 body { 
     max-width: 960px; 
     margin: 0 auto; 
     background: white; 
+    border: solid;
+    border-radius: 15px;
+    border-color:#d3d3d3;
 }
 h1 { 
     font-family: serif; 
@@ -21,6 +25,7 @@ hr {
     border-top: 1px solid lightgray; 
 }
 nav { 
+    border-radius: 10px 10px 0px 0px;
     background: lightgray; 
     display: flex; 
     align-items: center; 
