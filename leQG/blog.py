@@ -100,7 +100,7 @@ def delete(id):
 @login_required
 def post_view(id):
     post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
+        'SELECT p.id, p.title, p.body, p.created, p.author_id, username'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = ?',
         (id,)
@@ -114,8 +114,8 @@ def post_view(id):
         ' FROM comment AS c'
         ' INNER JOIN user AS u ON c.author_id = u.id'
         ' INNER JOIN post AS p ON c.post_id = p.id'
-        ' WHERE u.id = ? and p.id = ?',
-        (g.user['id'], id)
+        ' WHERE p.id = ?',
+        (id,)
     ).fetchall()
 
     return render_template('blog/post.html', post=post, comments=comments)
@@ -139,5 +139,26 @@ def comment(id):
             (g.user['id'], id, body)
         )
         db.commit()
-    
+    return redirect(url_for('blog.post_view', id=id))
+
+
+def get_comment(id, check_author=True):
+    comment = get_db().execute(
+        'SELECT * FROM comment AS c WHERE c.id = ?',
+        (id,)
+    ).fetchone()
+
+    if comment is None:
+        abort(404, f"Comment_id {id} doesn't exist.")
+    if check_author and comment['author_id'] != g.user['id']:
+        abort(403)
+    return comment
+
+@bp.route('/deleteComment/<int:id>', methods=['POST'])
+@login_required
+def deleteComment(id):
+    get_comment(id)
+    db = get_db()
+    db.execute('DELETE FROM comment WHERE id = ?', (id,))
+    db.commit()
     return redirect(url_for('blog.post_view', id=id))

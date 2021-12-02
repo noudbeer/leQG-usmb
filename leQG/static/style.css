@@ -68,7 +68,7 @@ nav ul li a, nav ul li span, header .action {
 .flash { 
     margin: 1em 0; 
     padding: 1em; 
-    background: #cae6f6; 
+    background: #ccd1d4; 
     border: 1px solid #377ba8; 
 }
 
@@ -116,4 +116,20 @@ input.danger {
 input[type=submit] { 
     align-self: start; 
     min-width: 10em; 
+}
+
+.comments {
+    background-color: lightgray;
+    border-radius: 15px;
+    margin: 5px;
+    padding: 0px 10px;
+}
+.comments .body {
+    display: flex;
+    justify-content: space-between;
+}
+.comments form {
+    margin : 0;
+    padding: 0;
+    width: 100%;
 }

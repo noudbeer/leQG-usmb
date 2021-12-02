@@ -12,21 +12,28 @@
                 <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
             {% endif %}
         </header>
-
         <p class="body">{{ post['body'] }}</p>
-
-        <div class="comments">
-            {% for comment in comments %}
-                <div>
-                    {{ comment['body'] }}
-                    <div class="about">by {{ comment['username'] }}</div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <form action="{{ url_for('blog.comment', id=post['id']) }}" method="POST">
-            <input type="text" name="comment" placeholder="Commentaire">
-            <button type="submit">Commenter</button>
-        </form>
     </article>
+    
+    <hr>
+    
+    {% for comment in comments %}
+        <div class="comments">
+            <div class="body">
+                <p>{{ comment['body'] }}</p>
+                <p class="signature">by {{ comment['username'] }}</p>
+            </div>
+
+            {% if g.user['id'] == comment['author_id'] %}
+                <form action="{{ url_for('blog.deleteComment', id=comment['id']) }}" method="POST">
+                    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <form action="{{ url_for('blog.comment', id=post['id']) }}" method="POST">
+        <input type="text" name="comment" placeholder="Commentaire">
+        <button type="submit">Commenter</button>
+    </form>
 {% endblock %}
