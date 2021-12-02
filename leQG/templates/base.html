@@ -1,16 +1,32 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - leQG-usmb</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %} - leQG-usmb</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
 <nav>
-    <h1>leQG-usmb</h1>
-    <ul>
+    <a href="{{ url_for('blog.index') }}"><h1>leQG-usmb</h1></a>
+    
     {% if g.user %}
-        <li><span>{{ g.user['username'] }}</span>
-        <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-    {% else %}
-        <li><a href="{{ url_for('auth.register') }}">Register</a>
-        <li><a href="{{ url_for('auth.login') }}">Log In</a>
-    {% endif %}
+        <form action="{{ url_for('profile.search') }}" method="GET">
+            <input type="text" name="username" placeholder="Search">
+            <button type="submit">
+                <img src="{{ url_for('static', filename='img/search-solid.svg') }}" width="20px">
+            </button>
+        </form>
+    {%endif %}
+    
+    <ul>
+        {% if g.user %}
+            <li><a href="{{ url_for('profile.index', id=g.user['id']) }}">{{ g.user['username'] }}</a>
+            <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+        {% else %}
+            <li><a href="{{ url_for('auth.register') }}">Register</a>
+            <li><a href="{{ url_for('auth.login') }}">Log In</a>
+        {% endif %}
     </ul>
 </nav>
 
@@ -25,3 +41,4 @@
     
     {% block content %}{% endblock %}
 </section>
+</html>

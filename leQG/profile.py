@@ -22,7 +22,8 @@ def get_user(id):
     return user
 
 
-@bp.route('/profile/<int:id>', methods=('GET',))
+@bp.route('/profile/<int:id>', methods=['GET'])
+@login_required
 def index(id):
     db = get_db()
 
@@ -37,3 +38,20 @@ def index(id):
     ).fetchall()
 
     return render_template('user/profile.html', user=user, posts=posts)
+
+
+@bp.route('/search', methods=['GET'])
+@login_required
+def search():
+    username = request.args.get('username', '')
+
+    db = get_db()
+    users = db.execute(
+        'SELECT *'
+        ' FROM user u'
+        ' WHERE u.username = ?',
+        (username,),
+        # ' ORDER BY username DESC' 
+    ).fetchall()
+
+    return render_template('user/search.html', users=users, search=username)

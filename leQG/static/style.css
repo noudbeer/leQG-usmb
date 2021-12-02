@@ -27,11 +27,15 @@ hr {
 nav { 
     border-radius: 10px 10px 0px 0px;
     background: lightgray; 
-    display: flex; 
+    display: flex;
     align-items: center; 
     padding: 0 0.5rem; 
 }
-nav h1 { 
+nav form {
+    display: flex;
+    align-items: center;
+}
+nav a { 
     flex: auto; 
     margin: 0; 
 }
@@ -67,6 +71,7 @@ nav ul li a, nav ul li span, header .action {
     background: #cae6f6; 
     border: 1px solid #377ba8; 
 }
+
 .post > header { 
     display: flex; 
     align-items: flex-end; 

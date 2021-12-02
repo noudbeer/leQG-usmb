@@ -1,7 +1,7 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
-from werkzeug.exceptions import abort
+from werkzeug.exceptions import MethodNotAllowed, abort
 
 from leQG.auth import login_required
 from leQG.db import get_db
@@ -9,6 +9,7 @@ from leQG.db import get_db
 bp = Blueprint('blog', __name__)
 
 @bp.route('/')
+@login_required
 def index():
     db = get_db()
     posts = db.execute(
@@ -94,3 +95,49 @@ def delete(id):
     db.execute('DELETE FROM post WHERE id = ?', (id,))
     db.commit()
     return redirect(url_for('blog.index'))
+
+@bp.route('/post/<int:id>', methods=['GET'])
+@login_required
+def post_view(id):
+    post = get_db().execute(
+        'SELECT p.id, title, body, created, author_id, username'
+        ' FROM post p JOIN user u ON p.author_id = u.id'
+        ' WHERE p.id = ?',
+        (id,)
+    ).fetchone()
+
+    if post is None:
+        abort(404, f"Post id {id} doesn't exist.")
+
+    comments = get_db().execute(
+        'SELECT c.id, c.author_id, c.post_id, c.body, c.created, username'
+        ' FROM comment AS c'
+        ' INNER JOIN user AS u ON c.author_id = u.id'
+        ' INNER JOIN post AS p ON c.post_id = p.id'
+        ' WHERE u.id = ? and p.id = ?',
+        (g.user['id'], id)
+    ).fetchall()
+
+    return render_template('blog/post.html', post=post, comments=comments)
+
+@bp.route('/comment/<int:id>', methods=['POST'])
+@login_required
+def comment(id):
+    body = request.form['comment']
+    error = None
+
+    if not body:
+        error = 'Un commantaire est requis.'
+
+    if error is not None:
+        flash(error)
+    else:
+        db = get_db()
+        db.execute(
+            'INSERT INTO comment(author_id, post_id, body)'
+            ' VALUES (?, ?, ?)',
+            (g.user['id'], id, body)
+        )
+        db.commit()
+    
+    return redirect(url_for('blog.post_view', id=id))
